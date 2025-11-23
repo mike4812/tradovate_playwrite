@@ -1,0 +1,23 @@
+[
+    {
+        "username": "user1@example.com",
+        "password": "password1",
+        "accountId": "account_001",
+        "autoConnect": true,
+        "description": "חשבון ראשי"
+    },
+    {
+        "username": "user2@example.com",
+        "password": "password2",
+        "accountId": "account_002",
+        "autoConnect": true,
+        "description": "חשבון משני"
+    },
+    {
+        "username": "user3@example.com",
+        "password": "password3",
+        "accountId": "account_003",
+        "autoConnect": false,
+        "description": "חשבון בדיקה"
+    }
+]

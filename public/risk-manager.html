@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Manager - SL/TP Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --dark: #1F2937;
+            --light: #F9FAFB;
+            --border: #E5E7EB;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .monitoring-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--success);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(-30px);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-toggle {
+            width: 50px;
+            height: 26px;
+        }
+
+        .card-toggle .toggle-slider {
+            width: 20px;
+            height: 20px;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #4B5563;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-number {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .input-number:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-select {
+            padding: 8px 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .input-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-unit {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .checkbox-custom.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkbox-custom.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Symbol Settings */
+        .symbol-settings {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .symbol-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .symbol-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #6B7280;
+            cursor: pointer;
+            transition: 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -12px;
+        }
+
+        .symbol-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .symbol-content {
+            display: none;
+        }
+
+        .symbol-content.active {
+            display: block;
+        }
+
+        /* Statistics */
+        .statistics-bar {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 5px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #6366F1);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #34D399);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #F87171);
+            color: white;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .alert-warning {
+            background: #FED7AA;
+            color: #92400E;
+        }
+
+        .alert-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* TP Levels */
+        .tp-levels {
+            margin-top: 15px;
+            padding: 15px;
+            background: #F9FAFB;
+            border-radius: 12px;
+        }
+
+        .tp-level-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .level-number {
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .btn-add-level {
+            padding: 10px 15px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .btn-remove-level {
+            padding: 5px 10px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="header-title">
+                <i class="fas fa-shield-alt"></i>
+                Risk Manager - Stop Loss & Take Profit
+            </h1>
+            <div class="monitoring-status">
+                <span style="font-weight: 600;">ניטור אוטומטי:</span>
+                <div class="toggle-switch" id="mainMonitoring">
+                    <div class="toggle-slider"></div>
+                </div>
+                <span id="monitoringText" style="color: #6B7280;">כבוי</span>
+            </div>
+        </div>
+
+        <!-- Statistics Bar -->
+        <div class="statistics-bar">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="activeOrders">0</div>
+                    <div class="stat-label">פקודות פעילות</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stopLossCount">0</div>
+                    <div class="stat-label">Stop Loss</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="takeProfitCount">0</div>
+                    <div class="stat-label">Take Profit</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="breakevenCount">0</div>
+                    <div class="stat-label">Breakeven</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Grid -->
+        <div class="settings-grid">
+            <!-- Stop Loss Settings -->
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-stop-circle" style="color: var(--danger);"></i>
+                        Stop Loss
+                    </div>
+                    <div class="toggle-switch card-toggle" id="stopLossEnabled">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-chart-line"></i>
+                        סוג Stop Loss
+                    </div>
+                    <div class="setting-input">
+                        <select class="input-select" id="slType">
+                            <option value="POINTS">נקודות</option>
+                            <option value="PERCENTAGE">אחוז</option>
+                            <option value="DOLLAR">דולר</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-ruler-vertical"></i>
+                        ערך
+                    </div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" id="slValue" value="10" min="1">
+                        <span class="input-unit" id="slUnit">נקודות</span>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-route"></i>
+                        Trailing Stop
+                    </div>
+                    <div class="setting-input">
+                        <div class="checkbox-wrapper">
+                            <div class="checkbox-custom" id="slTrailing"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-row" id="trailingDistanceRow" style="display: none;">
+                    <div class="setting-label">
+                        <i class="fas fa-arrows-alt-h"></i>
+                        מרחק Trailing
+                    </div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" id="slTrailingDistance" value="5" min="1">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Take Profit Settings -->
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-trophy" style="color: var(--success);"></i>
+                        Take Profit
+                    </div>
+                    <div class="toggle-switch card-toggle" id="takeProfitEnabled">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-chart-line"></i>
+                        סוג Take Profit
+                    </div>
+                    <div class="setting-input">
+                        <select class="input-select" id="tpType">
+                            <option value="POINTS">נקודות</option>
+                            <option value="PERCENTAGE">אחוז</option>
+                            <option value="DOLLAR">דולר</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-ruler-vertical"></i>
+                        ערך
+                    </div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" id="tpValue" value="20" min="1">
+                        <span class="input-unit" id="tpUnit">נקודות</span>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-layer-group"></i>
+                        TP מרובה
+                    </div>
+                    <div class="setting-input">
+                        <div class="checkbox-wrapper">
+                            <div class="checkbox-custom" id="tpPartial"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tp-levels" id="tpLevelsContainer" style="display: none;">
+                    <div class="tp-level-row">
+                        <div class="level-number">1</div>
+                        <input type="number" class="input-number" placeholder="נקודות" value="10">
+                        <input type="number" class="input-number" placeholder="אחוז" value="33">
+                        <button class="btn-remove-level">הסר</button>
+                    </div>
+                    <button class="btn-add-level" id="addTpLevel">
+                        <i class="fas fa-plus"></i> הוסף רמה
+                    </button>
+                </div>
+            </div>
+
+            <!-- General Settings -->
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-cog" style="color: var(--primary);"></i>
+                        הגדרות כלליות
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-balance-scale"></i>
+                        Breakeven אחרי
+                    </div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" id="breakevenPoints" value="10" min="0">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        הפסד יומי מקס'
+                    </div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" id="maxDailyLoss" value="500" min="0">
+                        <span class="input-unit">$</span>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-dollar-sign"></i>
+                        רווח יומי מקס'
+                    </div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" id="maxDailyProfit" value="1000" min="0">
+                        <span class="input-unit">$</span>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-link"></i>
+                        OCO Orders
+                    </div>
+                    <div class="setting-input">
+                        <div class="checkbox-wrapper">
+                            <div class="checkbox-custom checked" id="useOCO"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <i class="fas fa-moon"></i>
+                        סגור בסוף היום
+                    </div>
+                    <div class="setting-input">
+                        <div class="checkbox-wrapper">
+                            <div class="checkbox-custom checked" id="autoCloseDay"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-magic" style="color: var(--warning);"></i>
+                        תבניות מהירות
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="applyPreset('conservative')">
+                    <i class="fas fa-shield-alt"></i>
+                    שמרני (SL:5, TP:10)
+                </button>
+
+                <button class="btn btn-success" style="margin-bottom: 10px;" onclick="applyPreset('balanced')">
+                    <i class="fas fa-balance-scale"></i>
+                    מאוזן (SL:10, TP:20)
+                </button>
+
+                <button class="btn btn-danger" style="margin-bottom: 10px;" onclick="applyPreset('aggressive')">
+                    <i class="fas fa-rocket"></i>
+                    אגרסיבי (SL:15, TP:30)
+                </button>
+
+                <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="applyPreset('scalping')">
+                    <i class="fas fa-bolt"></i>
+                    סקלפינג (SL:3, TP:6)
+                </button>
+            </div>
+        </div>
+
+        <!-- Symbol-Specific Settings -->
+        <div class="symbol-settings">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-chart-bar"></i>
+                    הגדרות לפי סימול
+                </div>
+            </div>
+
+            <div class="symbol-tabs">
+                <button class="symbol-tab active" data-symbol="MNQ">MNQ</button>
+                <button class="symbol-tab" data-symbol="NQ">NQ</button>
+                <button class="symbol-tab" data-symbol="ES">ES</button>
+                <button class="symbol-tab" data-symbol="MES">MES</button>
+            </div>
+
+            <div class="symbol-content active" id="content-MNQ">
+                <div class="setting-row">
+                    <div class="setting-label">Stop Loss</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="10" min="1">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">Take Profit</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="20" min="1">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">Tick Value</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="0.5" step="0.01">
+                        <span class="input-unit">$</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="symbol-content" id="content-NQ">
+                <div class="setting-row">
+                    <div class="setting-label">Stop Loss</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="40" min="1">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">Take Profit</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="80" min="1">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">Tick Value</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="5" step="0.01">
+                        <span class="input-unit">$</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="symbol-content" id="content-ES">
+                <div class="setting-row">
+                    <div class="setting-label">Stop Loss</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="10" min="1">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">Take Profit</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="20" min="1">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">Tick Value</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="12.5" step="0.01">
+                        <span class="input-unit">$</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="symbol-content" id="content-MES">
+                <div class="setting-row">
+                    <div class="setting-label">Stop Loss</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="10" min="1">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">Take Profit</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="20" min="1">
+                        <span class="input-unit">נקודות</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">Tick Value</div>
+                    <div class="setting-input">
+                        <input type="number" class="input-number" value="1.25" step="0.01">
+                        <span class="input-unit">$</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-success" id="saveSettings">
+                <i class="fas fa-save"></i>
+                שמור הגדרות
+            </button>
+            <button class="btn btn-primary" id="applyNow">
+                <i class="fas fa-play"></i>
+                החל על פוזיציות פתוחות
+            </button>
+            <button class="btn btn-danger" id="resetSettings">
+                <i class="fas fa-undo"></i>
+                איפוס להגדרות ברירת מחדל
+            </button>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+    </div>
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        // Initialize Socket.IO
+        const socket = io();
+
+        // Current settings
+        let currentSettings = {
+            stopLoss: {
+                enabled: true,
+                type: 'POINTS',
+                value: 10,
+                trailing: false,
+                trailingDistance: 5
+            },
+            takeProfit: {
+                enabled: true,
+                type: 'POINTS',
+                value: 20,
+                partial: false,
+                levels: []
+            },
+            general: {
+                breakEvenAfterPoints: 10,
+                maxDailyLoss: 500,
+                maxDailyProfit: 1000,
+                useOCO: true,
+                autoCloseAtDayEnd: true
+            }
+        };
+
+        // Initialize UI
+        function initializeUI() {
+            // Toggle switches
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    updateToggleText();
+                    
+                    // Special handling for specific toggles
+                    if (this.id === 'mainMonitoring') {
+                        const action = this.classList.contains('active') ? 'start' : 'stop';
+                        socket.emit('risk-monitoring', action);
+                    }
+                });
+            });
+
+            // Checkboxes
+            document.querySelectorAll('.checkbox-custom').forEach(checkbox => {
+                checkbox.addEventListener('click', function() {
+                    this.classList.toggle('checked');
+                    
+                    // Special handling
+                    if (this.id === 'slTrailing') {
+                        document.getElementById('trailingDistanceRow').style.display = 
+                            this.classList.contains('checked') ? 'flex' : 'none';
+                    }
+                    if (this.id === 'tpPartial') {
+                        document.getElementById('tpLevelsContainer').style.display = 
+                            this.classList.contains('checked') ? 'block' : 'none';
+                    }
+                });
+            });
+
+            // Symbol tabs
+            document.querySelectorAll('.symbol-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.symbol-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.symbol-content').forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(`content-${this.dataset.symbol}`).classList.add('active');
+                });
+            });
+
+            // Unit updates
+            document.getElementById('slType').addEventListener('change', function() {
+                updateUnitLabel('slUnit', this.value);
+            });
+
+            document.getElementById('tpType').addEventListener('change', function() {
+                updateUnitLabel('tpUnit', this.value);
+            });
+
+            // Save settings button
+            document.getElementById('saveSettings').addEventListener('click', saveSettings);
+            
+            // Apply now button
+            document.getElementById('applyNow').addEventListener('click', () => {
+                if (confirm('להחיל את ההגדרות על כל הפוזיציות הפתוחות?')) {
+                    applySettingsNow();
+                }
+            });
+
+            // Reset button
+            document.getElementById('resetSettings').addEventListener('click', () => {
+                if (confirm('לאפס את כל ההגדרות לברירת המחדל?')) {
+                    resetToDefaults();
+                }
+            });
+
+            // Add TP level button
+            document.getElementById('addTpLevel').addEventListener('click', addTpLevel);
+
+            // Load initial settings
+            loadSettings();
+        }
+
+        // Update toggle text
+        function updateToggleText() {
+            const mainToggle = document.getElementById('mainMonitoring');
+            const text = document.getElementById('monitoringText');
+            text.textContent = mainToggle.classList.contains('active') ? 'פעיל' : 'כבוי';
+            text.style.color = mainToggle.classList.contains('active') ? 'var(--success)' : '#6B7280';
+        }
+
+        // Update unit label
+        function updateUnitLabel(labelId, type) {
+            const label = document.getElementById(labelId);
+            switch(type) {
+                case 'POINTS':
+                    label.textContent = 'נקודות';
+                    break;
+                case 'PERCENTAGE':
+                    label.textContent = '%';
+                    break;
+                case 'DOLLAR':
+                    label.textContent = '$';
+                    break;
+            }
+        }
+
+        // Apply preset
+        function applyPreset(preset) {
+            let settings = {};
+            
+            switch(preset) {
+                case 'conservative':
+                    settings = {
+                        stopLoss: { value: 5 },
+                        takeProfit: { value: 10 }
+                    };
+                    break;
+                case 'balanced':
+                    settings = {
+                        stopLoss: { value: 10 },
+                        takeProfit: { value: 20 }
+                    };
+                    break;
+                case 'aggressive':
+                    settings = {
+                        stopLoss: { value: 15 },
+                        takeProfit: { value: 30 }
+                    };
+                    break;
+                case 'scalping':
+                    settings = {
+                        stopLoss: { value: 3 },
+                        takeProfit: { value: 6 }
+                    };
+                    break;
+            }
+            
+            // Apply to UI
+            document.getElementById('slValue').value = settings.stopLoss.value;
+            document.getElementById('tpValue').value = settings.takeProfit.value;
+            
+            showAlert(`תבנית "${preset}" הוחלה בהצלחה`, 'success');
+        }
+
+        // Add TP level
+        function addTpLevel() {
+            const container = document.getElementById('tpLevelsContainer');
+            const levelCount = container.querySelectorAll('.tp-level-row').length + 1;
+            
+            const newLevel = document.createElement('div');
+            newLevel.className = 'tp-level-row';
+            newLevel.innerHTML = `
+                <div class="level-number">${levelCount}</div>
+                <input type="number" class="input-number" placeholder="נקודות" value="${levelCount * 10}">
+                <input type="number" class="input-number" placeholder="אחוז" value="${Math.floor(100/levelCount)}">
+                <button class="btn-remove-level" onclick="this.parentElement.remove()">הסר</button>
+            `;
+            
+            container.insertBefore(newLevel, document.getElementById('addTpLevel'));
+        }
+
+        // Save settings
+        function saveSettings() {
+            const settings = collectSettings();
+            
+            // Send to server
+            socket.emit('risk-settings', settings);
+            
+            // Also save via API
+            fetch('/api/risk/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('ההגדרות נשמרו בהצלחה!', 'success');
+                    currentSettings = settings;
+                }
+            })
+            .catch(error => {
+                showAlert('שגיאה בשמירת ההגדרות', 'danger');
+            });
+        }
+
+        // Collect settings from UI
+        function collectSettings() {
+            const settings = {
+                stopLoss: {
+                    enabled: document.getElementById('stopLossEnabled').classList.contains('active'),
+                    type: document.getElementById('slType').value,
+                    value: parseInt(document.getElementById('slValue').value),
+                    trailing: document.getElementById('slTrailing').classList.contains('checked'),
+                    trailingDistance: parseInt(document.getElementById('slTrailingDistance').value)
+                },
+                takeProfit: {
+                    enabled: document.getElementById('takeProfitEnabled').classList.contains('active'),
+                    type: document.getElementById('tpType').value,
+                    value: parseInt(document.getElementById('tpValue').value),
+                    partial: document.getElementById('tpPartial').classList.contains('checked'),
+                    levels: []
+                },
+                general: {
+                    breakEvenAfterPoints: parseInt(document.getElementById('breakevenPoints').value),
+                    maxDailyLoss: parseInt(document.getElementById('maxDailyLoss').value),
+                    maxDailyProfit: parseInt(document.getElementById('maxDailyProfit').value),
+                    useOCO: document.getElementById('useOCO').classList.contains('checked'),
+                    autoCloseAtDayEnd: document.getElementById('autoCloseDay').classList.contains('checked')
+                }
+            };
+            
+            // Collect TP levels
+            document.querySelectorAll('.tp-level-row').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                if (inputs.length >= 2) {
+                    settings.takeProfit.levels.push({
+                        points: parseInt(inputs[0].value),
+                        percent: parseInt(inputs[1].value)
+                    });
+                }
+            });
+            
+            return settings;
+        }
+
+        // Load settings
+        function loadSettings() {
+            fetch('/api/risk/settings')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        applySettingsToUI(data.settings);
+                        currentSettings = data.settings;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading settings:', error);
+                });
+                
+            // Load statistics
+            loadStatistics();
+        }
+
+        // Apply settings to UI
+        function applySettingsToUI(settings) {
+            // Stop Loss
+            if (settings.stopLoss) {
+                document.getElementById('stopLossEnabled').classList.toggle('active', settings.stopLoss.enabled);
+                document.getElementById('slType').value = settings.stopLoss.type;
+                document.getElementById('slValue').value = settings.stopLoss.value;
+                document.getElementById('slTrailing').classList.toggle('checked', settings.stopLoss.trailing);
+                document.getElementById('slTrailingDistance').value = settings.stopLoss.trailingDistance;
+                document.getElementById('trailingDistanceRow').style.display = 
+                    settings.stopLoss.trailing ? 'flex' : 'none';
+            }
+            
+            // Take Profit
+            if (settings.takeProfit) {
+                document.getElementById('takeProfitEnabled').classList.toggle('active', settings.takeProfit.enabled);
+                document.getElementById('tpType').value = settings.takeProfit.type;
+                document.getElementById('tpValue').value = settings.takeProfit.value;
+                document.getElementById('tpPartial').classList.toggle('checked', settings.takeProfit.partial);
+                document.getElementById('tpLevelsContainer').style.display = 
+                    settings.takeProfit.partial ? 'block' : 'none';
+            }
+            
+            // General
+            if (settings.general) {
+                document.getElementById('breakevenPoints').value = settings.general.breakEvenAfterPoints || 10;
+                document.getElementById('maxDailyLoss').value = settings.general.maxDailyLoss || 500;
+                document.getElementById('maxDailyProfit').value = settings.general.maxDailyProfit || 1000;
+                document.getElementById('useOCO').classList.toggle('checked', settings.general.useOCO);
+                document.getElementById('autoCloseDay').classList.toggle('checked', settings.general.autoCloseAtDayEnd);
+            }
+        }
+
+        // Load statistics
+        function loadStatistics() {
+            fetch('/api/risk/statistics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateStatistics(data.statistics);
+                    }
+                });
+        }
+
+        // Update statistics display
+        function updateStatistics(stats) {
+            document.getElementById('activeOrders').textContent = stats.totalOrders || 0;
+            document.getElementById('stopLossCount').textContent = stats.stopLossActive || 0;
+            document.getElementById('takeProfitCount').textContent = stats.takeProfitActive || 0;
+            document.getElementById('breakevenCount').textContent = stats.breakEvenMoved || 0;
+            
+            // Update monitoring status
+            if (stats.monitoring) {
+                document.getElementById('mainMonitoring').classList.add('active');
+                updateToggleText();
+            }
+        }
+
+        // Apply settings now
+        function applySettingsNow() {
+            const settings = collectSettings();
+            
+            fetch('/api/risk/apply-now', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('ההגדרות הוחלו על כל הפוזיציות הפתוחות', 'success');
+                }
+            });
+        }
+
+        // Reset to defaults
+        function resetToDefaults() {
+            applySettingsToUI({
+                stopLoss: {
+                    enabled: true,
+                    type: 'POINTS',
+                    value: 10,
+                    trailing: false,
+                    trailingDistance: 5
+                },
+                takeProfit: {
+                    enabled: true,
+                    type: 'POINTS',
+                    value: 20,
+                    partial: false,
+                    levels: []
+                },
+                general: {
+                    breakEvenAfterPoints: 10,
+                    maxDailyLoss: 500,
+                    maxDailyProfit: 1000,
+                    useOCO: true,
+                    autoCloseAtDayEnd: true
+                }
+            });
+            
+            showAlert('ההגדרות אופסו לברירת המחדל', 'info');
+        }
+
+        // Show alert
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            
+            let icon = 'info-circle';
+            switch(type) {
+                case 'success': icon = 'check-circle'; break;
+                case 'danger': icon = 'exclamation-triangle'; break;
+                case 'warning': icon = 'exclamation-circle'; break;
+            }
+            
+            alert.innerHTML = `
+                <i class="fas fa-${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Socket event handlers
+        socket.on('risk-settings-updated', (settings) => {
+            applySettingsToUI(settings);
+            showAlert('ההגדרות עודכנו', 'success');
+        });
+
+        socket.on('risk-monitoring-status', (data) => {
+            const toggle = document.getElementById('mainMonitoring');
+            if (data.monitoring) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+            updateToggleText();
+        });
+
+        socket.on('risk-event', (event) => {
+            switch(event.type) {
+                case 'sl-tp-added':
+                    showAlert(`SL/TP הוגדרו עבור ${event.data.symbol}`, 'success');
+                    break;
+                case 'breakeven-moved':
+                    showAlert(`Stop Loss הועבר ל-Breakeven עבור ${event.data.symbol}`, 'info');
+                    break;
+                case 'max-daily-loss':
+                    showAlert(`הגעת להפסד היומי המקסימלי: $${Math.abs(event.loss)}`, 'danger');
+                    break;
+                case 'max-daily-profit':
+                    showAlert(`הגעת לרווח היומי המקסימלי: $${event.profit}`, 'success');
+                    break;
+            }
+            
+            // Reload statistics
+            loadStatistics();
+        });
+
+        // Auto-refresh statistics
+        setInterval(loadStatistics, 5000);
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeUI);
+    </script>
+</body>
+</html>

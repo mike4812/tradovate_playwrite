@@ -1,0 +1,23 @@
+{
+    "server": {
+        "port": 3000,
+        "host": "0.0.0.0"
+    },
+    "playwright": {
+        "headless": false,
+        "timeout": 30000,
+        "viewport": {
+            "width": 1920,
+            "height": 1080
+        }
+    },
+    "trading": {
+        "defaultSymbol": "MNQ",
+        "defaultQuantity": 1,
+        "defaultOrderType": "MARKET"
+    },
+    "monitoring": {
+        "updateInterval": 5000,
+        "reconnectDelay": 10000
+    }
+}

@@ -1,0 +1,23 @@
+[
+    {
+        "username": "MikeZalivanskii47",
+        "password": "L5168V5980N8440tv=",
+        "accountId": "account_2",
+        "autoConnect": false,
+        "description": "Michael"
+    },
+    {
+        "username": "AlexanderAshurov76",
+        "password": "L3666H3137M3428tv=",
+        "accountId": "account_1",
+        "autoConnect": true,
+        "description": "alex"
+    },
+    {
+        "username": "AlexanderAshurov76",
+        "password": "L3666H3137M3428tv=",
+        "accountId": "account_3",
+        "autoConnect": true,
+        "description": "alex"
+    }
+]

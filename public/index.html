@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tradovate Multi-Account Control</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --dark: #1F2937;
+            --light: #F9FAFB;
+            --border: #E5E7EB;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .connection-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-connected {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-disconnected {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Control Panel */
+        .control-panel {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .quick-actions {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-buy {
+            background: linear-gradient(135deg, #10B981, #34D399);
+            color: white;
+        }
+
+        .btn-sell {
+            background: linear-gradient(135deg, #EF4444, #F87171);
+            color: white;
+        }
+
+        .btn-close {
+            background: linear-gradient(135deg, #6B7280, #9CA3AF);
+            color: white;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #F59E0B, #FBBF24);
+            color: white;
+        }
+
+        .action-btn i {
+            font-size: 24px;
+        }
+
+        /* Trade Settings */
+        .trade-settings {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6B7280;
+        }
+
+        .input-field {
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Accounts Grid */
+        .accounts-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .accounts-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #F3F4F6, #E5E7EB);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 5px;
+        }
+
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .account-card {
+            background: #F9FAFB;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+
+        .account-card.active {
+            border-color: var(--success);
+            background: #F0FDF4;
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .account-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .account-status {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-online {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-offline {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .account-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .info-value.text-success {
+            color: #10B981;
+        }
+
+        .info-value.text-danger {
+            color: #EF4444;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6B7280;
+            margin-top: 2px;
+        }
+
+        /* Add Account Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn-secondary {
+            background: #F3F4F6;
+            color: var(--dark);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Activity Log */
+        .activity-log {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            padding: 10px;
+            border-right: 3px solid var(--border);
+            margin-bottom: 10px;
+            background: #F9FAFB;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-item.success {
+            border-right-color: var(--success);
+        }
+
+        .log-item.error {
+            border-right-color: var(--danger);
+        }
+
+        .log-time {
+            color: #6B7280;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .accounts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            animation: slideDown 0.3s ease;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100%);
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Tradovate Control</span>
+            </div>
+            <div class="connection-status status-disconnected" id="connectionStatus">
+                <span class="status-dot" style="background: #EF4444;"></span>
+                <span>מנותק</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Control Panel -->
+    <div class="control-panel">
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="section-title">
+                <i class="fas fa-bolt"></i>
+                פקודות מהירות
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn btn-buy" id="buyAllBtn">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>BUY ALL</span>
+                </button>
+                <button class="action-btn btn-sell" id="sellAllBtn">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>SELL ALL</span>
+                </button>
+                <button class="action-btn btn-close" id="closeAllBtn">
+                    <i class="fas fa-times-circle"></i>
+                    <span>CLOSE ALL</span>
+                </button>
+                <button class="action-btn btn-restart" id="restartBtn">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>RESTART</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Trade Settings -->
+        <div class="trade-settings">
+            <div class="section-title">
+                <i class="fas fa-cog"></i>
+                הגדרות מסחר
+            </div>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label class="input-label">סימול</label>
+                    <select class="input-field" id="symbolInput">
+                        <option value="NQ" selected>NQ - Nasdaq 100</option>
+                        <option value="MNQ">MNQ - Micro Nasdaq</option>
+                        <option value="ES">ES - S&P 500</option>
+                        <option value="MES">MES - Micro S&P</option>
+                        <option value="GC">GC - Gold</option>
+                        <option value="MGC">MGC - Micro Gold</option>
+                        <option value="CL">CL - Crude Oil</option>
+                        <option value="MCL">MCL - Micro Crude</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">כמות</label>
+                    <input type="number" class="input-field" id="quantityInput" value="1" min="1">
+                </div>
+            </div>
+        </div>
+
+        <!-- Accounts Container -->
+        <div class="accounts-container">
+            <div class="section-title">
+                <i class="fas fa-users"></i>
+                חשבונות פעילים
+            </div>
+            
+            <!-- Stats -->
+            <div class="accounts-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalAccounts">0</div>
+                    <div class="stat-label">סה"כ חשבונות</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="activeAccounts">0</div>
+                    <div class="stat-label">מחוברים</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPositions">0</div>
+                    <div class="stat-label">פוזיציות פתוחות</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPnL">$0</div>
+                    <div class="stat-label">רווח/הפסד</div>
+                </div>
+            </div>
+
+            <!-- Accounts Grid -->
+            <div class="accounts-grid" id="accountsGrid">
+                <!-- Account cards will be inserted here -->
+            </div>
+            
+            <!-- Add Account Button -->
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="showAddAccountModal()" style="padding: 12px 30px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                    <i class="fas fa-plus"></i> הוסף חשבון חדש
+                </button>
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="activity-log">
+            <div class="section-title">
+                <i class="fas fa-history"></i>
+                היסטוריית פעילות
+            </div>
+            <div id="activityLog">
+                <!-- Log items will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="addAccountBtn">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Add Account Modal -->
+    <div class="modal" id="addAccountModal">
+        <div class="modal-content">
+            <div class="modal-header">הוסף חשבון חדש</div>
+            <input type="text" class="modal-input" id="modalUsername" placeholder="שם משתמש">
+            <input type="password" class="modal-input" id="modalPassword" placeholder="סיסמה">
+            <input type="text" class="modal-input" id="modalAccountId" placeholder="מזהה חשבון (אופציונלי)">
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" id="confirmAddAccount">הוסף</button>
+                <button class="modal-btn modal-btn-secondary" id="cancelAddAccount">ביטול</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <!-- Main JavaScript -->
+    <script>
+        // Initialize Socket.IO with error handling
+        const socket = io({
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionAttempts: 10,
+            timeout: 20000
+        });
+        
+        // Socket connection events
+        socket.on('connect', () => {
+            console.log('✅ Connected to server - Socket ID:', socket.id);
+            updateConnectionStatus(true);
+        });
+
+        socket.on('disconnect', (reason) => {
+            console.log('❌ Disconnected from server. Reason:', reason);
+            updateConnectionStatus(false);
+        });
+
+        socket.on('connect_error', (error) => {
+            console.error('❌ Connection error:', error);
+            updateConnectionStatus(false);
+        });
+
+        socket.on('reconnect_attempt', (attemptNumber) => {
+            console.log(`🔄 Reconnection attempt ${attemptNumber}...`);
+        });
+
+        socket.on('reconnect', (attemptNumber) => {
+            console.log(`✅ Reconnected after ${attemptNumber} attempts`);
+            updateConnectionStatus(true);
+        });
+        
+        // DOM Elements
+        const connectionStatus = document.getElementById('connectionStatus');
+        const buyAllBtn = document.getElementById('buyAllBtn');
+        const sellAllBtn = document.getElementById('sellAllBtn');
+        const closeAllBtn = document.getElementById('closeAllBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const symbolInput = document.getElementById('symbolInput');
+        const quantityInput = document.getElementById('quantityInput');
+        const accountsGrid = document.getElementById('accountsGrid');
+        const activityLog = document.getElementById('activityLog');
+        const addAccountBtn = document.getElementById('addAccountBtn');
+        const addAccountModal = document.getElementById('addAccountModal');
+        const toast = document.getElementById('toast');
+        
+        // State
+        let accounts = [];
+        let isConnected = false;
+
+        // Socket Events
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            updateConnectionStatus(true);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            updateConnectionStatus(false);
+        });
+
+        socket.on('system-status', (data) => {
+            console.log('System status:', data);
+            if (data.accounts) {
+                updateAccounts(data.accounts);
+            }
+        });
+
+        socket.on('accounts-update', (data) => {
+            console.log('Accounts update:', data);
+            updateAccounts(data);
+        });
+
+        socket.on('command-result', (data) => {
+            console.log('Command result:', data);
+            if (data.success) {
+                showToast(`${data.action} בוצע בהצלחה!`, 'success');
+                addLogItem(`${data.action} completed`, 'success');
+            } else {
+                showToast(`שגיאה: ${data.error}`, 'error');
+                addLogItem(`${data.action} failed: ${data.error}`, 'error');
+            }
+        });
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            if (connected) {
+                connectionStatus.className = 'connection-status status-connected';
+                connectionStatus.innerHTML = `
+                    <span class="status-dot" style="background: #10B981;"></span>
+                    <span>מחובר</span>
+                `;
+            } else {
+                connectionStatus.className = 'connection-status status-disconnected';
+                connectionStatus.innerHTML = `
+                    <span class="status-dot" style="background: #EF4444;"></span>
+                    <span>מנותק</span>
+                `;
+            }
+        }
+
+        // Update accounts display
+        function updateAccounts(accountsList) {
+            accounts = accountsList;
+            
+            // Update stats
+            document.getElementById('totalAccounts').textContent = accounts.length;
+            document.getElementById('activeAccounts').textContent = 
+                accounts.filter(a => a.status === 'connected').length;
+            
+            let totalPositions = 0;
+            let totalPnL = 0;
+            
+            // Render account cards
+            accountsGrid.innerHTML = '';
+            accounts.forEach(account => {
+                totalPositions += account.positions?.length || 0;
+                account.positions?.forEach(pos => {
+                    totalPnL += pos.pnl || 0;
+                });
+                
+                const card = createAccountCard(account);
+                accountsGrid.appendChild(card);
+            });
+            
+            document.getElementById('totalPositions').textContent = totalPositions;
+            document.getElementById('totalPnL').textContent = `$${totalPnL.toFixed(2)}`;
+        }
+
+        // Create account card element
+        function createAccountCard(account) {
+            const card = document.createElement('div');
+            card.className = `account-card ${account.status === 'connected' ? 'active' : ''}`;
+            
+            const statusClass = account.status === 'connected' ? 'status-online' : 'status-offline';
+            const statusText = account.status === 'connected' ? 'מחובר' : 'מנותק';
+            
+            const pnlValue = account.pnl || 0;
+            const pnlClass = pnlValue >= 0 ? 'text-success' : 'text-danger';
+            const pnlSign = pnlValue >= 0 ? '+' : '';
+            
+            card.innerHTML = `
+                <div class="account-header">
+                    <div>
+                        <span class="account-name">${account.username}</span>
+                        ${account.accountName && account.accountName !== account.username ? 
+                            `<br><small style="color: #6B7280; font-size: 11px;">${account.accountName}</small>` : ''}
+                    </div>
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <span class="account-status ${statusClass}">${statusText}</span>
+                        <button onclick="removeAccount('${account.accountId}', '${account.username}')" 
+                                style="background: #dc3545; color: white; border: none; border-radius: 3px; padding: 3px 8px; cursor: pointer; font-size: 12px;"
+                                title="מחק חשבון">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+                <div class="account-info">
+                    <div class="info-item">
+                        <div class="info-value">$${(account.equity || account.balance || 0).toFixed(2)}</div>
+                        <div class="info-label">Equity</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value ${pnlClass}">${pnlSign}$${Math.abs(pnlValue).toFixed(2)}</div>
+                        <div class="info-label">P&L</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value">${account.positions?.length || 0}</div>
+                        <div class="info-label">פוזיציות</div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Execute trade command
+        function executeCommand(action, params = {}) {
+            if (!isConnected) {
+                showToast('אין חיבור לשרת', 'error');
+                return;
+            }
+            
+            socket.emit('execute-command', {
+                action,
+                params
+            });
+        }
+
+        // Button click handlers
+        buyAllBtn.addEventListener('click', () => {
+            const symbol = symbolInput.value || 'NQ';
+            const quantity = parseInt(quantityInput.value) || 1;
+            
+            executeCommand('BUY_ALL', { symbol, quantity, orderType: 'MARKET' });
+        });
+
+        sellAllBtn.addEventListener('click', () => {
+            const symbol = symbolInput.value || 'NQ';
+            const quantity = parseInt(quantityInput.value) || 1;
+            
+            executeCommand('SELL_ALL', { symbol, quantity, orderType: 'MARKET' });
+        });
+
+        closeAllBtn.addEventListener('click', () => {
+            executeCommand('CLOSE_ALL');
+        });
+
+        restartBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to restart the server? All connections will be closed.')) {
+                fetch('/api/restart', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        alert('Server is restarting...');
+                        setTimeout(() => location.reload(), 3000);
+                    })
+                    .catch(err => {
+                        console.error('Restart failed:', err);
+                        alert('Failed to restart server');
+                    });
+            }
+        });
+
+        // Add account modal
+        addAccountBtn.addEventListener('click', () => {
+            addAccountModal.classList.add('active');
+        });
+
+        document.getElementById('cancelAddAccount').addEventListener('click', () => {
+            addAccountModal.classList.remove('active');
+        });
+
+        document.getElementById('confirmAddAccount').addEventListener('click', () => {
+            const username = document.getElementById('modalUsername').value;
+            const password = document.getElementById('modalPassword').value;
+            const accountId = document.getElementById('modalAccountId').value || 
+                              `account_${Date.now()}`;
+            
+            if (username && password) {
+                executeCommand('CONNECT_ACCOUNT', {
+                    username,
+                    password,
+                    accountId
+                });
+                
+                // Clear and close modal
+                document.getElementById('modalUsername').value = '';
+                document.getElementById('modalPassword').value = '';
+                document.getElementById('modalAccountId').value = '';
+                addAccountModal.classList.remove('active');
+            }
+        });
+
+        // Add log item
+        function addLogItem(message, type = 'info') {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('he-IL');
+            
+            const logItem = document.createElement('div');
+            logItem.className = `log-item ${type}`;
+            logItem.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+                <span class="log-time">${timeStr}</span>
+            `;
+            
+            activityLog.insertBefore(logItem, activityLog.firstChild);
+            
+            // Keep only last 50 log items
+            while (activityLog.children.length > 50) {
+                activityLog.removeChild(activityLog.lastChild);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'b':
+                        e.preventDefault();
+                        buyAllBtn.click();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        sellAllBtn.click();
+                        break;
+                    case 'x':
+                        e.preventDefault();
+                        closeAllBtn.click();
+                        break;
+                }
+            }
+        });
+
+        // ========== ADD/REMOVE ACCOUNT FUNCTIONS ==========
+        
+        function showAddAccountModal() {
+            const html = `
+                <div id="addAccountModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 30px; max-width: 500px; width: 90%; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                        <h2 style="margin-bottom: 20px; color: #333;">➕ הוסף חשבון Tradovate</h2>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">שם משתמש:</label>
+                            <input type="text" id="newUsername" placeholder="username@email.com" style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">סיסמה:</label>
+                            <input type="password" id="newPassword" placeholder="••••••••" style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">תיאור (אופציונלי):</label>
+                            <input type="text" id="newDescription" placeholder="חשבון ראשי" style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="newAutoConnect" checked style="margin-left: 8px; width: 18px; height: 18px;">
+                                <span>התחבר אוטומטית</span>
+                            </label>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="addNewAccount()" style="flex: 1; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                                ✅ הוסף חשבון
+                            </button>
+                            <button onclick="closeAddAccountModal()" style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">
+                                ❌ ביטול
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', html);
+        }
+        
+        function closeAddAccountModal() {
+            const modal = document.getElementById('addAccountModal');
+            if (modal) modal.remove();
+        }
+        
+        async function addNewAccount() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value;
+            const description = document.getElementById('newDescription').value.trim();
+            const autoConnect = document.getElementById('newAutoConnect').checked;
+            
+            if (!username || !password) {
+                alert('❌ שם משתמש וסיסמה הם שדות חובה!');
+                return;
+            }
+            
+            try {
+                showToast('⏳ מוסיף חשבון...', 'info');
+                
+                const response = await fetch('/api/accounts/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        description,
+                        autoConnect
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(`✅ חשבון ${username} נוסף בהצלחה!`, 'success');
+                    closeAddAccountModal();
+                    
+                    // Refresh accounts list
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showToast(`❌ שגיאה: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showToast(`❌ שגיאה: ${error.message}`, 'error');
+            }
+        }
+        
+        async function removeAccount(accountId, username) {
+            if (!confirm(`❌ האם אתה בטוח שברצונך למחוק את חשבון ${username}?`)) {
+                return;
+            }
+            
+            try {
+                showToast('⏳ מוחק חשבון...', 'info');
+                
+                const response = await fetch(`/api/accounts/remove/${accountId}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(`✅ חשבון נמחק בהצלחה!`, 'success');
+                    
+                    // Refresh accounts list
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showToast(`❌ שגיאה: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showToast(`❌ שגיאה: ${error.message}`, 'error');
+            }
+        }
+
+        // Initial log
+        addLogItem('System initialized', 'success');
+    </script>
+</body>
+</html>
