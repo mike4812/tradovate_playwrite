@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  tradovate-control:
+    build: .
+    container_name: tradovate-multi-account
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config:/app/config
+      - ./sessions:/app/sessions
+      - ./logs:/app/logs
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HEADLESS=true
+    restart: unless-stopped
+    networks:
+      - tradovate-network
+
+networks:
+  tradovate-network:
+    driver: bridge
