@@ -1,4 +1,6 @@
 // server.js - השרת הראשי עם API וממשק ווב
+require('dotenv').config(); // Load environment variables first!
+
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -94,8 +96,10 @@ function requireAuth(req, res, next) {
 
 // Middleware to protect static files
 app.use((req, res, next) => {
-    // Allow only login.html without authentication
-    if (req.path === '/login.html') {
+    // Allow login page and auth API without authentication
+    if (req.path === '/login.html' || 
+        req.path === '/api/login' || 
+        req.path === '/api/auth/status') {
         return next();
     }
     
@@ -382,7 +386,7 @@ async function handleTradeCommand(socket, command) {
 // Login endpoint
 app.post('/api/login', (req, res) => {
     const { password } = req.body;
-    const correctPassword = process.env.ADMIN_PASSWORD || 'admin123'; // Change this!
+    const correctPassword = process.env.ADMIN_PASSWORD || 'admin123';
     
     if (password === correctPassword) {
         req.session.authenticated = true;
