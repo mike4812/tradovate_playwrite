@@ -71,7 +71,53 @@ const io = socketIo(server, {
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+
+// Simple authentication
+const session = require('express-session');
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'tradovate-secret-key-change-this',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: false, // Set to true if using HTTPS
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// Authentication middleware
+function requireAuth(req, res, next) {
+    if (req.session && req.session.authenticated) {
+        return next();
+    }
+    res.redirect('/login.html');
+}
+
+// Middleware to protect static files
+app.use((req, res, next) => {
+    // Allow only login.html without authentication
+    if (req.path === '/login.html') {
+        return next();
+    }
+    
+    // All other files require authentication
+    if (!req.session || !req.session.authenticated) {
+        return res.redirect('/login.html');
+    }
+    
+    next();
+});
+
+// Serve static files (now protected by middleware above)
 app.use(express.static('public'));
+
+// Root redirect
+app.get('/', (req, res) => {
+    if (req.session && req.session.authenticated) {
+        res.sendFile(__dirname + '/public/index.html');
+    } else {
+        res.redirect('/login.html');
+    }
+});
 
 // יצירת מנהל Playwright ומנהל סיכונים
 const manager = new PlaywrightManager();
@@ -330,8 +376,41 @@ async function handleTradeCommand(socket, command) {
 }
 
 // =========================
-// REST API Endpoints
+// Authentication API
 // =========================
+
+// Login endpoint
+app.post('/api/login', (req, res) => {
+    const { password } = req.body;
+    const correctPassword = process.env.ADMIN_PASSWORD || 'admin123'; // Change this!
+    
+    if (password === correctPassword) {
+        req.session.authenticated = true;
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ success: false, error: 'Invalid password' });
+    }
+});
+
+// Logout endpoint
+app.post('/api/logout', (req, res) => {
+    req.session.destroy();
+    res.json({ success: true });
+});
+
+// Check auth status
+app.get('/api/auth/status', (req, res) => {
+    res.json({ authenticated: !!req.session.authenticated });
+});
+
+// =========================
+// REST API Endpoints (Protected)
+// =========================
+
+// Protect all API endpoints except auth
+app.use('/api/accounts', requireAuth);
+app.use('/api/trade', requireAuth);
+app.use('/api/risk', requireAuth);
 
 // בדיקת בריאות
 app.get('/api/health', (req, res) => {

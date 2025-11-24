@@ -547,9 +547,14 @@
                 <i class="fas fa-chart-line"></i>
                 <span>ארגמן 148</span>
             </div>
-            <div class="connection-status status-disconnected" id="connectionStatus">
-                <span class="status-dot" style="background: #EF4444;"></span>
-                <span>מנותק</span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="connection-status status-disconnected" id="connectionStatus">
+                    <span class="status-dot" style="background: #EF4444;"></span>
+                    <span>מנותק</span>
+                </div>
+                <button onclick="logout()" style="background: #EF4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: 'Heebo', sans-serif; font-weight: 600;">
+                    🚪 התנתק
+                </button>
             </div>
         </div>
     </header>
@@ -1312,6 +1317,23 @@
                 }
             } catch (error) {
                 showToast(`❌ שגיאה: ${error.message}`, 'error');
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/login.html';
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/login.html';
             }
         }
 
