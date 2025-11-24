@@ -268,26 +268,45 @@ class PlaywrightManager {
         const account = this.accounts.get(accountId);
         if (!account) return;
 
-        setInterval(async () => {
+        const monitoringInterval = setInterval(async () => {
             try {
+                // Check if account still exists and page is not closed
+                const currentAccount = this.accounts.get(accountId);
+                if (!currentAccount || !currentAccount.page || currentAccount.page.isClosed()) {
+                    console.log(`Account ${accountId} no longer active, stopping monitoring`);
+                    clearInterval(monitoringInterval);
+                    return;
+                }
+                
                 // עדכון מאזן וחשבון
-                const accountInfo = await this.getAccountBalance(account.page);
+                const accountInfo = await this.getAccountBalance(currentAccount.page);
                 
                 // עדכון פוזיציות
-                const positions = await this.getAccountPositions(account.page);
+                const positions = await this.getAccountPositions(currentAccount.page);
                 
                 // עדכון במפה
-                account.accountName = accountInfo.accountName;
-                account.equity = accountInfo.equity;
-                account.pnl = accountInfo.pnl;
-                account.balance = accountInfo.equity; // backwards compatibility
-                account.positions = positions;
-                account.lastUpdate = new Date();
+                currentAccount.accountName = accountInfo.accountName;
+                currentAccount.equity = accountInfo.equity;
+                currentAccount.pnl = accountInfo.pnl;
+                currentAccount.balance = accountInfo.equity; // backwards compatibility
+                currentAccount.positions = positions;
+                currentAccount.lastUpdate = new Date();
                 
             } catch (error) {
-                console.error(`Error monitoring account ${accountId}:`, error);
+                // Check if error is due to closed page/browser
+                if (error.message.includes('Target page, context or browser has been closed') ||
+                    error.message.includes('Target closed')) {
+                    console.log(`Account ${accountId} browser closed, stopping monitoring`);
+                    clearInterval(monitoringInterval);
+                    this.accounts.delete(accountId);
+                } else {
+                    console.error(`Error monitoring account ${accountId}:`, error.message);
+                }
             }
         }, 3000); // עדכון כל 3 שניות
+        
+        // Store interval reference for cleanup
+        account.monitoringInterval = monitoringInterval;
     }
 
     // קבלת מאזן חשבון
@@ -637,7 +656,19 @@ class PlaywrightManager {
     async disconnectAccount(accountId) {
         const account = this.accounts.get(accountId);
         if (account) {
-            await account.context.close();
+            // Clear monitoring interval if exists
+            if (account.monitoringInterval) {
+                clearInterval(account.monitoringInterval);
+                console.log(`🛑 Stopped monitoring for ${accountId}`);
+            }
+            
+            // Close context
+            try {
+                await account.context.close();
+            } catch (error) {
+                console.log(`Context already closed for ${accountId}`);
+            }
+            
             this.accounts.delete(accountId);
             console.log(`👋 Account ${accountId} disconnected`);
         }
@@ -645,7 +676,11 @@ class PlaywrightManager {
         // Close the browser instance for this account
         const browser = this.browsers.get(accountId);
         if (browser) {
-            await browser.close();
+            try {
+                await browser.close();
+            } catch (error) {
+                console.log(`Browser already closed for ${accountId}`);
+            }
             this.browsers.delete(accountId);
         }
     }

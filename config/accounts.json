@@ -1,5 +1,4 @@
 [
-
     {
         "username": "AlexanderAshurov76",
         "password": "L3666H3137M3428tv=",
@@ -18,7 +17,7 @@
         "username": "AlexanderAshurov76",
         "password": "L3666H3137M3428tv=",
         "accountId": "account_2",
-        "autoConnect": true,
+        "autoConnect": false,
         "description": "alex"
     },
     {
