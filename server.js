@@ -484,6 +484,36 @@ app.post('/api/accounts/:accountId/disconnect', async (req, res) => {
     }
 });
 
+// Get quantity from Tradovate page
+app.get('/api/accounts/:accountId/quantity', async (req, res) => {
+    try {
+        const { accountId } = req.params;
+        const account = manager.accounts.get(accountId);
+        
+        if (!account || account.status !== 'connected') {
+            return res.status(404).json({ success: false, error: 'Account not connected' });
+        }
+        
+        const quantity = await manager.getQuantity(account.page);
+        res.json({ success: true, quantity });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Change quantity on Tradovate page (up/down)
+app.post('/api/accounts/:accountId/change-quantity', async (req, res) => {
+    try {
+        const { accountId } = req.params;
+        const { delta } = req.body;
+        
+        const result = await manager.changeQuantity(accountId, delta);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // Toggle autoConnect for account
 app.post('/api/accounts/:accountId/toggle-autoconnect', async (req, res) => {
     try {

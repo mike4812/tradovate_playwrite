@@ -793,6 +793,7 @@
 
         // Update accounts display
         function updateAccounts(accountsList) {
+            const prevAccounts = accounts;
             accounts = accountsList;
             
             // Update stats
@@ -803,26 +804,67 @@
             let totalPositions = 0;
             let totalPnL = 0;
             
-            // Render account cards
-            accountsGrid.innerHTML = '';
-            accounts.forEach(account => {
-                totalPositions += account.positions?.length || 0;
-                account.positions?.forEach(pos => {
-                    totalPnL += pos.pnl || 0;
+            // Check if we need to re-render (account count changed)
+            const needsRerender = !prevAccounts || prevAccounts.length !== accounts.length;
+            
+            if (needsRerender) {
+                // Full re-render only when account count changes
+                accountsGrid.innerHTML = '';
+                accounts.forEach(account => {
+                    totalPositions += account.positions?.length || 0;
+                    account.positions?.forEach(pos => {
+                        totalPnL += pos.pnl || 0;
+                    });
+                    
+                    const card = createAccountCard(account);
+                    accountsGrid.appendChild(card);
                 });
                 
-                const card = createAccountCard(account);
-                accountsGrid.appendChild(card);
-            });
+                // Update quantity displays for connected accounts
+                setTimeout(updateQuantityDisplays, 500);
+            } else {
+                // Just update the data without re-rendering
+                accounts.forEach(account => {
+                    totalPositions += account.positions?.length || 0;
+                    account.positions?.forEach(pos => {
+                        totalPnL += pos.pnl || 0;
+                    });
+                    
+                    // Update only changed values
+                    updateAccountCard(account);
+                });
+            }
             
             document.getElementById('totalPositions').textContent = totalPositions;
             document.getElementById('totalPnL').textContent = `$${totalPnL.toFixed(2)}`;
+        }
+        
+        // Update existing account card without re-rendering
+        function updateAccountCard(account) {
+            const card = document.querySelector(`[data-account-id="${account.accountId}"]`);
+            if (!card) return;
+            
+            // Update only the values that change
+            const equityEl = card.querySelector('.equity-value');
+            const pnlEl = card.querySelector('.pnl-value');
+            
+            if (equityEl) {
+                equityEl.textContent = `$${(account.equity || account.balance || 0).toFixed(2)}`;
+            }
+            
+            if (pnlEl) {
+                const pnlValue = account.pnl || 0;
+                const pnlSign = pnlValue >= 0 ? '+' : '';
+                pnlEl.textContent = `${pnlSign}$${Math.abs(pnlValue).toFixed(2)}`;
+                pnlEl.className = `info-value ${pnlValue >= 0 ? 'text-success' : 'text-danger'}`;
+            }
         }
 
         // Create account card element
         function createAccountCard(account) {
             const card = document.createElement('div');
             card.className = `account-card ${account.status === 'connected' ? 'active' : ''}`;
+            card.setAttribute('data-account-id', account.accountId);
             
             const statusClass = account.status === 'connected' ? 'status-online' : 'status-offline';
             const statusText = account.status === 'connected' ? 'מחובר' : 'מנותק';
@@ -851,17 +893,36 @@
                 </div>
                 <div class="account-info">
                     <div class="info-item">
-                        <div class="info-value">$${(account.equity || account.balance || 0).toFixed(2)}</div>
+                        <div class="info-value equity-value">$${(account.equity || account.balance || 0).toFixed(2)}</div>
                         <div class="info-label">Equity</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-value ${pnlClass}">${pnlSign}$${Math.abs(pnlValue).toFixed(2)}</div>
+                        <div class="info-value pnl-value ${pnlClass}">${pnlSign}$${Math.abs(pnlValue).toFixed(2)}</div>
                         <div class="info-label">P&L</div>
                     </div>
+                    ${account.status === 'connected' ? `
+                    <div class="info-item">
+                        <div style="display: flex; align-items: center; gap: 5px; justify-content: center;">
+                            <button onclick="changeQuantity('${account.accountId}', -1)" 
+                                    style="background: #EF4444; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;"
+                                    title="הפחת כמות">
+                                −
+                            </button>
+                            <span id="qty_${account.accountId}" style="min-width: 25px; text-align: center; font-weight: 600; font-size: 16px;">-</span>
+                            <button onclick="changeQuantity('${account.accountId}', 1)" 
+                                    style="background: #10B981; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;"
+                                    title="הוסף כמות">
+                                +
+                            </button>
+                        </div>
+                        <div class="info-label">כמות</div>
+                    </div>
+                    ` : `
                     <div class="info-item">
                         <div class="info-value">${account.positions?.length || 0}</div>
                         <div class="info-label">פוזיציות</div>
                     </div>
+                    `}
                 </div>
                 <div style="padding: 10px 15px; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between;">
                     <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #374151;">
@@ -1098,6 +1159,52 @@
                 showToast(`❌ שגיאה: ${error.message}`, 'error');
             }
         }
+        
+        async function changeQuantity(accountId, delta) {
+            try {
+                const response = await fetch(`/api/accounts/${accountId}/change-quantity`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ delta })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const qtyElement = document.getElementById(`qty_${accountId}`);
+                    if (qtyElement) {
+                        qtyElement.textContent = data.newQuantity;
+                    }
+                    showToast(`✅ כמות עודכנה ל-${data.newQuantity}`, 'success');
+                } else {
+                    showToast(`❌ שגיאה: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showToast(`❌ שגיאה: ${error.message}`, 'error');
+            }
+        }
+        
+        async function updateQuantityDisplays() {
+            for (const account of accounts) {
+                if (account.status === 'connected') {
+                    try {
+                        const response = await fetch(`/api/accounts/${account.accountId}/quantity`);
+                        const data = await response.json();
+                        if (data.success) {
+                            const qtyElement = document.getElementById(`qty_${account.accountId}`);
+                            if (qtyElement && qtyElement.textContent !== data.quantity.toString()) {
+                                qtyElement.textContent = data.quantity;
+                            }
+                        }
+                    } catch (error) {
+                        // Silently ignore errors to avoid console spam
+                    }
+                }
+            }
+        }
+        
+        // Update quantities every 5 seconds
+        setInterval(updateQuantityDisplays, 5000);
         
         async function toggleAutoConnect(accountId, autoConnect) {
             try {

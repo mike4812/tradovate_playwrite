@@ -516,6 +516,55 @@ class PlaywrightManager {
         return results;
     }
 
+    // Get quantity from Tradovate page
+    async getQuantity(page) {
+        try {
+            const quantityInput = await page.waitForSelector('input.form-control[placeholder="Select value"]', { timeout: 5000 }).catch(() => null);
+            if (quantityInput) {
+                const value = await quantityInput.inputValue();
+                return parseInt(value) || 1;
+            }
+            return 1;
+        } catch (error) {
+            console.error('Error getting quantity:', error.message);
+            return 1;
+        }
+    }
+
+    // Set quantity on Tradovate page
+    async setQuantity(page, quantity) {
+        try {
+            const quantityInput = await page.waitForSelector('input.form-control[placeholder="Select value"]', { timeout: 5000 });
+            
+            // Clear current value
+            await quantityInput.click({ clickCount: 3 }); // Select all
+            await page.keyboard.press('Backspace');
+            
+            // Type new quantity
+            await quantityInput.type(quantity.toString());
+            
+            console.log(`✅ Set quantity to: ${quantity}`);
+            return { success: true, quantity };
+        } catch (error) {
+            console.error(`❌ Failed to set quantity:`, error.message);
+            throw error;
+        }
+    }
+
+    // Change quantity for account (up/down)
+    async changeQuantity(accountId, delta) {
+        const account = this.accounts.get(accountId);
+        if (!account || account.status !== 'connected') {
+            throw new Error('Account not connected');
+        }
+
+        const currentQty = await this.getQuantity(account.page);
+        const newQty = Math.max(1, Math.min(10, currentQty + delta)); // Min 1, Max 10
+        
+        await this.setQuantity(account.page, newQty);
+        return { success: true, oldQuantity: currentQty, newQuantity: newQty };
+    }
+
     // ביצוע פקודת BUY
     async executeBuy(page, symbol, quantity, orderType) {
         console.log(`🔵 Executing BUY: ${symbol} qty: ${quantity}`);

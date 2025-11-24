@@ -10,14 +10,14 @@
         "username": "AlexanderAshurov76",
         "password": "L3666H3137M3428tv=",
         "accountId": "account_3",
-        "autoConnect": true,
+        "autoConnect": false,
         "description": "alex"
     },
     {
         "username": "AlexanderAshurov76",
         "password": "L3666H3137M3428tv=",
         "accountId": "account_2",
-        "autoConnect": false,
+        "autoConnect": true,
         "description": "alex"
     },
     {
