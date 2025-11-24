@@ -145,6 +145,54 @@ async function loadAccountsFromConfig() {
     }
 }
 
+// Helper function to get all accounts (connected + disconnected)
+async function getAllAccountsWithStatus() {
+    try {
+        // Get connected accounts from manager
+        const connectedAccounts = manager.getAllAccountsStatus();
+        
+        // Read all accounts from config file
+        const accountsData = await fs.promises.readFile('./config/accounts.json', 'utf8');
+        const configAccounts = JSON.parse(accountsData);
+        
+        // Merge: Show all accounts from config, update status if connected
+        const allAccounts = configAccounts.map(configAccount => {
+            const connectedAccount = connectedAccounts.find(
+                acc => acc.accountId === configAccount.accountId
+            );
+            
+            if (connectedAccount) {
+                // Account is connected - merge data
+                return {
+                    ...connectedAccount,
+                    autoConnect: configAccount.autoConnect,
+                    description: configAccount.description
+                };
+            } else {
+                // Account is not connected - show from config
+                return {
+                    accountId: configAccount.accountId,
+                    username: configAccount.username,
+                    accountName: configAccount.description || configAccount.username,
+                    status: 'disconnected',
+                    balance: 0,
+                    equity: 0,
+                    pnl: 0,
+                    positions: [],
+                    autoConnect: configAccount.autoConnect,
+                    description: configAccount.description,
+                    lastUpdate: null
+                };
+            }
+        });
+        
+        return allAccounts;
+    } catch (error) {
+        log('Error getting all accounts: ' + error.message, 'error');
+        return manager.getAllAccountsStatus();
+    }
+}
+
 // =========================
 // Risk Manager Events
 // =========================
@@ -179,20 +227,22 @@ riskManager.on('max-daily-profit-reached', (profit) => {
 // =========================
 // WebSocket Handlers
 // =========================
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
     log('👤 New client connected: ' + socket.id);
     connectedClients.add(socket.id);
     
     // שליחת סטטוס ראשוני
+    const initialAccounts = await getAllAccountsWithStatus();
     socket.emit('system-status', {
         ready: isSystemReady,
-        accounts: manager.getAllAccountsStatus()
+        accounts: initialAccounts
     });
     
     // עדכון סטטוס בזמן אמת
-    const statusInterval = setInterval(() => {
+    const statusInterval = setInterval(async () => {
         if (isSystemReady) {
-            socket.emit('accounts-update', manager.getAllAccountsStatus());
+            const accounts = await getAllAccountsWithStatus();
+            socket.emit('accounts-update', accounts);
         }
     }, 2000);
     
@@ -294,11 +344,18 @@ app.get('/api/health', (req, res) => {
 });
 
 // קבלת סטטוס חשבונות
-app.get('/api/accounts', (req, res) => {
-    res.json({
-        success: true,
-        accounts: manager.getAllAccountsStatus()
-    });
+app.get('/api/accounts', async (req, res) => {
+    try {
+        const allAccounts = await getAllAccountsWithStatus();
+        log(`📊 Returning ${allAccounts.length} accounts`);
+        
+        res.json({
+            success: true,
+            accounts: allAccounts
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
 // התחברות לחשבון חדש
@@ -422,6 +479,47 @@ app.post('/api/accounts/:accountId/disconnect', async (req, res) => {
     try {
         await manager.disconnectAccount(req.params.accountId);
         res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Toggle autoConnect for account
+app.post('/api/accounts/:accountId/toggle-autoconnect', async (req, res) => {
+    try {
+        const { accountId } = req.params;
+        const { autoConnect } = req.body;
+        
+        // Read current accounts
+        const fs = require('fs').promises;
+        const accountsPath = './config/accounts.json';
+        const accountsData = await fs.readFile(accountsPath, 'utf8');
+        const accounts = JSON.parse(accountsData);
+        
+        // Find and update the account
+        const accountIndex = accounts.findIndex(acc => acc.accountId === accountId);
+        if (accountIndex === -1) {
+            return res.status(404).json({ success: false, error: 'Account not found' });
+        }
+        
+        accounts[accountIndex].autoConnect = autoConnect;
+        
+        // Save back to file
+        await fs.writeFile(accountsPath, JSON.stringify(accounts, null, 4));
+        
+        log(`🔄 ${accounts[accountIndex].username} autoConnect ${autoConnect ? 'enabled' : 'disabled'}`);
+        
+        // Connect or disconnect based on the new state
+        if (autoConnect) {
+            // Connect the account
+            const result = await manager.loginAccount(accounts[accountIndex]);
+            res.json({ success: true, autoConnect, connected: result.success });
+        } else {
+            // Disconnect the account
+            await manager.disconnectAccount(accountId);
+            res.json({ success: true, autoConnect, connected: false });
+        }
+        
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }

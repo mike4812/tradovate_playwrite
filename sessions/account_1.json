@@ -1,0 +1,323 @@
+{
+  "cookies": [
+    {
+      "name": "theme_cookie",
+      "value": "null",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1771748346,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_cfuvid",
+      "value": "a33RZ8Wer5pPI2m3EoRfnkFzG50SxhC1v0xyjSc19lc-1763907568344-0.0.1.1-604800000",
+      "domain": ".hubspot.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_gcl_au",
+      "value": "1.1.162136954.1763907568",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1771683568,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "hubspotutk",
+      "value": "95f1664bc7bd728070400517740beb09",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1779524348,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__hssrc",
+      "value": "1",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_cfuvid",
+      "value": "8zTeZRveKUdtBvGMomLtRJRt70mwEw7nXI7_CsT05nc-1763907568905-0.0.1.1-604800000",
+      "domain": ".www.marinsoftware.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_gid",
+      "value": "GA1.2.514727027.1763907569",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1764058749,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "MUID",
+      "value": "06BE73DF49986D0F0D5F657248086CBB",
+      "domain": ".bing.com",
+      "path": "/",
+      "expires": 1797609155.188913,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "muc_ads",
+      "value": "3b8770e6-ba49-486f-9d84-2354ac7ad0f8",
+      "domain": ".t.co",
+      "path": "/",
+      "expires": 1798467569.432926,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_fbp",
+      "value": "fb.1.1763907569458.207766249142391675",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1771748355,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "kLh2jeKJ67G",
+      "value": "b3e5b83b-7d92-da96-bd3c-9cb19c434044",
+      "domain": "trader.tradovate.com",
+      "path": "/",
+      "expires": 1798467574.116119,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "MR",
+      "value": "0",
+      "domain": ".bat.bing.com",
+      "path": "/",
+      "expires": 1764517955.18911,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "w5Z259z6VL95XQs8y7eEwvt0oIs0xQdr1ivUfauIBL8-1763972348-1.0.1.1-EIbI1x_l4qaKaHIs.MEau_7.mclonAOXQ0TavrRlr_f27xI36IA9J4ZmsLET89Joqme4kvNly0ak75Y4yrvOLl8fLn9_fdY30n4lLkIxroc",
+      "domain": ".hubspot.com",
+      "path": "/",
+      "expires": 1763974148.335802,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_uetsid",
+      "value": "6c4f8930c87711f0ba4d9ff1ff39458c",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1764058748,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_uetvid",
+      "value": "6c4fc570c87711f098ad67e0a4ea468d",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1797668348,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__hstc",
+      "value": "155022887.95f1664bc7bd728070400517740beb09.1763907568058.1763907568058.1763972347850.2",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1779524348,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__hssc",
+      "value": "155022887.1.1763972347850",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1763974148,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_rdt_uuid",
+      "value": "1763907569093.cc594027-bfc0-4562-9ff5-7e7905494e31",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1771748348,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.2.1859417387.1763907569",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1798532349.826717,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_gat_UA-76416636-1",
+      "value": "1",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1763972409,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_hp2_ses_props.643941305",
+      "value": "%7B%22ts%22%3A1763972349395%2C%22d%22%3A%22trader.tradovate.com%22%2C%22h%22%3A%22%2Fwelcome%22%7D",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1763974155,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "g_state",
+      "value": "{\"i_l\":0,\"i_ll\":1763972351980,\"i_b\":\"EIa3ANNYuPD7FUENVCvngzVC4HNG2OJY9gUFI0JMQ2E\"}",
+      "domain": "trader.tradovate.com",
+      "path": "/",
+      "expires": 1779524351,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_hp2_id.643941305",
+      "value": "%7B%22userId%22%3A%228552488515238442%22%2C%22pageviewId%22%3A%223102824985105912%22%2C%22sessionId%22%3A%224119124614444202%22%2C%22identity%22%3A%224161354%22%2C%22trackerVersion%22%3A%224.0%22%2C%22identityField%22%3Anull%2C%22isIdentified%22%3A1%7D",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1798049955,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_dd_s",
+      "value": "rum=2&id=fb1b16d9-ad9d-4ee2-807b-25b1eae08a31&created=1763972346580&expire=1763973255009",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1763973255,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "_ga_QJMZ50LECE",
+      "value": "GS2.1.s1763972348$o2$g1$t1763972355$j53$l0$h0",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1798532355.613815,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_ZR0S7L7265",
+      "value": "GS2.1.s1763972348$o2$g1$t1763972355$j53$l0$h0",
+      "domain": ".tradovate.com",
+      "path": "/",
+      "expires": 1798532355.619199,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://trader.tradovate.com",
+      "localStorage": [
+        {
+          "name": "settings",
+          "value": "{\"objects\":{\"hasSeenSimWelcome\":{\"name\":\"hasSeenSimWelcome\",\"hasSeen\":true}},\"updatedAt\":1763907580418}"
+        },
+        {
+          "name": "lastExternalReferrerTime",
+          "value": "1763972348794"
+        },
+        {
+          "name": "_uetvid_exp",
+          "value": "Sat, 19 Dec 2026 08:19:08 GMT"
+        },
+        {
+          "name": "lastUsername",
+          "value": ""
+        },
+        {
+          "name": "_uetsid_exp",
+          "value": "Tue, 25 Nov 2025 08:19:08 GMT"
+        },
+        {
+          "name": "ld:66cdf5b9cf61891061b4e437:$diagnostics",
+          "value": "{\"dataSinceDate\":1763972346253,\"droppedEvents\":0,\"eventsInLastBatch\":0,\"streamInits\":[]}"
+        },
+        {
+          "name": "topicsLastReferenceTime",
+          "value": "1763972355334"
+        },
+        {
+          "name": "_uetvid",
+          "value": "6c4fc570c87711f098ad67e0a4ea468d"
+        },
+        {
+          "name": "lastExternalReferrer",
+          "value": "empty"
+        },
+        {
+          "name": "_gcl_ls",
+          "value": "{\"schema\":\"gcl\",\"version\":1,\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"creationTimeMs\":1763907568456},\"expires\":1771683568456}}"
+        },
+        {
+          "name": "_uetsid",
+          "value": "6c4f8930c87711f0ba4d9ff1ff39458c"
+        },
+        {
+          "name": "bugsnag-anonymous-id",
+          "value": "cmibt0tjf00001q7nj644aa6l"
+        },
+        {
+          "name": "locale",
+          "value": "en"
+        }
+      ]
+    }
+  ]
+}

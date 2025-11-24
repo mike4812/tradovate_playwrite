@@ -831,6 +831,8 @@
             const pnlClass = pnlValue >= 0 ? 'text-success' : 'text-danger';
             const pnlSign = pnlValue >= 0 ? '+' : '';
             
+            const autoConnectChecked = account.autoConnect ? 'checked' : '';
+            
             card.innerHTML = `
                 <div class="account-header">
                     <div>
@@ -860,6 +862,16 @@
                         <div class="info-value">${account.positions?.length || 0}</div>
                         <div class="info-label">פוזיציות</div>
                     </div>
+                </div>
+                <div style="padding: 10px 15px; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #374151;">
+                        <input type="checkbox" 
+                               ${autoConnectChecked} 
+                               onchange="toggleAutoConnect('${account.accountId}', this.checked)"
+                               style="width: 16px; height: 16px; cursor: pointer;">
+                        <span>התחבר אוטומטית</span>
+                    </label>
+                    <small style="color: #6B7280; font-size: 11px;">${account.accountId}</small>
                 </div>
             `;
             
@@ -1084,6 +1096,43 @@
                 }
             } catch (error) {
                 showToast(`❌ שגיאה: ${error.message}`, 'error');
+            }
+        }
+        
+        async function toggleAutoConnect(accountId, autoConnect) {
+            try {
+                showToast(`⏳ ${autoConnect ? 'מתחבר' : 'מתנתק'}...`, 'info');
+                
+                const response = await fetch(`/api/accounts/${accountId}/toggle-autoconnect`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ autoConnect })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (autoConnect) {
+                        if (data.connected) {
+                            showToast(`✅ חשבון הופעל והתחבר בהצלחה!`, 'success');
+                            addLogItem(`חשבון ${accountId} התחבר אוטומטית`, 'success');
+                        } else {
+                            showToast(`⚠️ חשבון הופעל אך ההתחברות נכשלה`, 'warning');
+                            addLogItem(`חשבון ${accountId} - התחברות נכשלה`, 'error');
+                        }
+                    } else {
+                        showToast(`✅ חשבון כובה והתנתק בהצלחה!`, 'success');
+                        addLogItem(`חשבון ${accountId} התנתק`, 'success');
+                    }
+                } else {
+                    showToast(`❌ שגיאה: ${data.error}`, 'error');
+                    // Revert checkbox state on error
+                    setTimeout(() => location.reload(), 1000);
+                }
+            } catch (error) {
+                showToast(`❌ שגיאה: ${error.message}`, 'error');
+                // Revert checkbox state on error
+                setTimeout(() => location.reload(), 1000);
             }
         }
         

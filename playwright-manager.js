@@ -301,31 +301,59 @@ class PlaywrightManager {
                     accountName = accountNameEl.textContent.trim();
                 }
                 
-                // Get equity from top bar - look for EQUITY label
+                // Get EQUITY and P&L - Try currency-wrap first
                 let equity = 0;
-                const equityLabels = Array.from(document.querySelectorAll('small, .label')).filter(el => 
-                    el.textContent.toUpperCase().includes('EQUITY')
-                );
+                let pnl = 0;
+                const currencyWraps = document.querySelectorAll('.currency-wrap');
                 
-                if (equityLabels.length > 0) {
-                    const equityParent = equityLabels[0].parentElement;
-                    const equityValue = equityParent.querySelector('.value, div:not(.label)');
-                    if (equityValue) {
-                        equity = parseFloat(equityValue.textContent.replace(/[^0-9.-]/g, ''));
+                // Find Equity and P&L by looking at labels near currency-wrap elements
+                for (const wrap of currencyWraps) {
+                    const parent = wrap.parentElement;
+                    const label = parent?.querySelector('small, .label');
+                    if (label) {
+                        const labelText = label.textContent.toUpperCase();
+                        const valueText = wrap.textContent.trim().split(/\s+/)[0]; // Get first part before "usd"
+                        
+                        if (labelText.includes('EQUITY') && equity === 0) {
+                            equity = parseFloat(valueText.replace(/[^0-9.-]/g, ''));
+                            console.log('Found Equity in currency-wrap:', equity);
+                        } else if ((labelText.includes('OPEN P') || labelText.includes('P&L') || labelText.includes('P/L')) && pnl === 0) {
+                            pnl = parseFloat(valueText.replace(/[^0-9.-]/g, ''));
+                            console.log('Found P&L in currency-wrap:', pnl);
+                        }
+                        
+                        // Break if we found both
+                        if (equity !== 0 && pnl !== 0) break;
                     }
                 }
                 
-                // Get OPEN P/L
-                let pnl = 0;
-                const pnlLabels = Array.from(document.querySelectorAll('small, .label')).filter(el => 
-                    el.textContent.toUpperCase().includes('OPEN P') || el.textContent.toUpperCase().includes('P&L') || el.textContent.toUpperCase().includes('P/L')
-                );
+                // Fallback to old method if equity not found
+                if (equity === 0) {
+                    const equityLabels = Array.from(document.querySelectorAll('small, .label')).filter(el => 
+                        el.textContent.toUpperCase().includes('EQUITY')
+                    );
+                    
+                    if (equityLabels.length > 0) {
+                        const equityParent = equityLabels[0].parentElement;
+                        const equityValue = equityParent.querySelector('.value, div:not(.label), .currency-wrap');
+                        if (equityValue) {
+                            equity = parseFloat(equityValue.textContent.replace(/[^0-9.-]/g, ''));
+                        }
+                    }
+                }
                 
-                if (pnlLabels.length > 0) {
-                    const pnlParent = pnlLabels[0].parentElement;
-                    const pnlValue = pnlParent.querySelector('.value, div:not(.label)');
-                    if (pnlValue) {
-                        pnl = parseFloat(pnlValue.textContent.replace(/[^0-9.-]/g, ''));
+                // Fallback to old method if P&L not found
+                if (pnl === 0) {
+                    const pnlLabels = Array.from(document.querySelectorAll('small, .label')).filter(el => 
+                        el.textContent.toUpperCase().includes('OPEN P') || el.textContent.toUpperCase().includes('P&L') || el.textContent.toUpperCase().includes('P/L')
+                    );
+                    
+                    if (pnlLabels.length > 0) {
+                        const pnlParent = pnlLabels[0].parentElement;
+                        const pnlValue = pnlParent.querySelector('.value, div:not(.label), .currency-wrap');
+                        if (pnlValue) {
+                            pnl = parseFloat(pnlValue.textContent.replace(/[^0-9.-]/g, ''));
+                        }
                     }
                 }
                 
