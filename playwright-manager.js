@@ -660,20 +660,22 @@ class PlaywrightManager {
         console.log(`⭕ Closing all positions...`);
         
         try {
-            // Find and click "Cancel All" button
-            const cancelAllButton = await page.waitForSelector(
-                'button:has-text("Cancel All"), .btn:has-text("Cancel All")',
+            // Find and click the panic button "Exit All Positions Cancel All"
+            const panicButton = await page.waitForSelector(
+                'div.btn.btn-danger.panic-button',
                 { timeout: 10000 }
             );
             
-            await cancelAllButton.click();
-            console.log(`✅ Clicked Cancel All button`);
+            await panicButton.click();
+            console.log(`✅ Clicked "Exit All Positions Cancel All" panic button`);
             
-            await page.waitForTimeout(500);
+            // Wait for action to complete
+            await page.waitForTimeout(1500);
             
             return { 
                 status: 'completed', 
                 closedPositions: 'all',
+                action: 'Exit All Positions Cancel All',
                 time: new Date().toISOString() 
             };
         } catch (error) {
