@@ -924,6 +924,25 @@
                     </div>
                     `}
                 </div>
+                ${account.status === 'connected' ? `
+                <div style="padding: 10px 15px; border-top: 1px solid #E5E7EB; display: flex; gap: 5px; justify-content: center;">
+                    <button onclick="executeAccountCommand('${account.accountId}', 'BUY')" 
+                            style="flex: 1; background: #10B981; color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 600;"
+                            title="Buy">
+                        BUY
+                    </button>
+                    <button onclick="executeAccountCommand('${account.accountId}', 'SELL')" 
+                            style="flex: 1; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 600;"
+                            title="Sell">
+                        SELL
+                    </button>
+                    <button onclick="executeAccountCommand('${account.accountId}', 'CLOSE')" 
+                            style="flex: 1; background: #F59E0B; color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 600;"
+                            title="Close All Positions">
+                        CLOSE
+                    </button>
+                </div>
+                ` : ''}
                 <div style="padding: 10px 15px; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between;">
                     <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #374151;">
                         <input type="checkbox" 
@@ -1152,6 +1171,30 @@
                     setTimeout(() => {
                         location.reload();
                     }, 1500);
+                } else {
+                    showToast(`❌ שגיאה: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showToast(`❌ שגיאה: ${error.message}`, 'error');
+            }
+        }
+        
+        async function executeAccountCommand(accountId, action) {
+            try {
+                const symbol = symbolInput.value || 'NQ';
+                showToast(`⏳ מבצע ${action}...`, 'info');
+                
+                const response = await fetch(`/api/accounts/${accountId}/execute`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, symbol })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(`✅ ${action} הושלם בהצלחה!`, 'success');
+                    addLogItem(`${action} executed on ${accountId}`, 'success');
                 } else {
                     showToast(`❌ שגיאה: ${data.error}`, 'error');
                 }

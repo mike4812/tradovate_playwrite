@@ -555,6 +555,36 @@ app.post('/api/accounts/:accountId/toggle-autoconnect', async (req, res) => {
     }
 });
 
+// Execute command on single account
+app.post('/api/accounts/:accountId/execute', async (req, res) => {
+    try {
+        const { accountId } = req.params;
+        const { action, symbol = 'NQ' } = req.body;
+        
+        const account = manager.accounts.get(accountId);
+        if (!account || account.status !== 'connected') {
+            return res.status(404).json({ success: false, error: 'Account not connected' });
+        }
+        
+        let result;
+        const quantity = await manager.getQuantity(account.page);
+        
+        if (action === 'BUY') {
+            result = await manager.executeBuy(account.page, symbol, quantity, 'MARKET');
+        } else if (action === 'SELL') {
+            result = await manager.executeSell(account.page, symbol, quantity, 'MARKET');
+        } else if (action === 'CLOSE') {
+            result = await manager.closeAllPositions(account.page);
+        } else {
+            return res.status(400).json({ success: false, error: 'Invalid action' });
+        }
+        
+        res.json({ success: true, result, action });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // =========================
 // Risk Manager API Endpoints
 // =========================
