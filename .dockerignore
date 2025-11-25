@@ -1,0 +1,12 @@
+node_modules
+logs
+sessions
+.env
+.git
+.gitignore
+*.md
+*.bat
+*.ps1
+test-connection.js
+setup.js
+viewProc.bat
